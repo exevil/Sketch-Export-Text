@@ -148,7 +148,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PyP-zj-QcW">
                                 <rect key="frame" x="137" y="101" width="211" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Blank Lines Between Artboards" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="zar-9W-xcE">
+                                <buttonCell key="cell" type="check" title="Blank Line Between Artboards" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="zar-9W-xcE">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
