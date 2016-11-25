@@ -1,0 +1,201 @@
+@import 'sketch-nibui.js'
+
+var onRun = function(context) {
+    
+    var pathToContentsFolder = context.scriptPath.stringByDeletingLastPathComponent().stringByDeletingLastPathComponent()
+    var pathToSettingsFile = pathToContentsFolder.stringByAppendingPathComponent("/Sketch/LastSettings.plist")
+        
+    // Getting accessory view
+    var nibUI = new NibUI(context, "UIBundle", "MyNibUI", [
+                           "useLastSettingsButton",
+                                                           
+                           "minSymbolsTextField",
+                           "maxSymbolsTextField",
+                           
+                           "blankSpaceBetweenArtboardsButton",
+                           "showArtboardNamesButton",
+                           "dividerTextField",
+                                                           
+                           "saveToClipboardButton",
+                           "saveToFileButton",
+                           ])
+    
+    // Configuring alert
+    var alert = NSAlert.alloc().init()
+    var iconPath = pathToContentsFolder.stringByAppendingPathComponent("/Resources/Icon.png")
+    alert.setIcon(NSImage.new().initWithContentsOfFile(iconPath))
+    alert.setMessageText('Export text from "' + context.document.currentPage().nodeName() + '" to File' )
+    var alertMessageTextLastWordLocation = alert.messageText().rangeOfString_options(" ", NSBackwardsSearch).location
+    var alertMessageTextWithoutLastWord = alert.messageText().substringToIndex(alertMessageTextLastWordLocation)
+    alert.addButtonWithTitle("Run")
+    alert.addButtonWithTitle("Cancel")
+    alert.setAccessoryView(nibUI.view)
+    
+    nibUI.attachTargetAndAction(nibUI.saveToClipboardButton, function() {
+                                nibUI.saveToFileButton.setState(0);
+                                alert.setMessageText(alertMessageTextWithoutLastWord + " Clipboard")
+                                });
+    nibUI.attachTargetAndAction(nibUI.saveToFileButton, function() {
+                                nibUI.saveToClipboardButton.setState(0);
+                                alert.setMessageText(alertMessageTextWithoutLastWord + " File")
+                                });
+    
+    // Restoring last parameters
+    nibUI.attachTargetAndAction(nibUI.useLastSettingsButton, function() {
+                                var lastParameters = NSDictionary.dictionaryWithContentsOfFile(pathToSettingsFile)
+                                print(lastParameters["divider"] == "---")
+                                nibUI.minSymbolsTextField.setStringValue( lastParameters["minLength"] != 0 ? lastParameters["minLength"] : "" )
+                                nibUI.maxSymbolsTextField.setStringValue( lastParameters["maxLength"] != 0 ? lastParameters["maxLength"] : "" )
+                                
+                                nibUI.blankSpaceBetweenArtboardsButton.setState( lastParameters["showBlankSpaceBetweenArtboards"] )
+                                nibUI.showArtboardNamesButton.setState( lastParameters["showArtboardNames"] )
+                                nibUI.dividerTextField.setStringValue( lastParameters["divider"] != "---" ? lastParameters["divider"] : "" )
+                                
+                                nibUI.saveToFileButton.setState( lastParameters["saveToFile"] )
+                                nibUI.saveToClipboardButton.setState( lastParameters["saveToClipBoard"] )
+                                });
+    
+    // Launching alert
+    var result = alert.runModal()
+    
+    if (result == NSAlertFirstButtonReturn) {
+        var parameters = NSDictionary.dictionaryWithDictionary({
+            "minLength" : nibUI.minSymbolsTextField.intValue() || 0,
+            "maxLength" : nibUI.maxSymbolsTextField.intValue() || 0,
+            
+            "showBlankSpaceBetweenArtboards" : nibUI.blankSpaceBetweenArtboardsButton.state(),
+            "showArtboardNames" : nibUI.showArtboardNamesButton.state(),
+            "divider" : nibUI.dividerTextField.stringValue() != "" ? nibUI.dividerTextField.stringValue() : "---",
+            
+            "saveToFile" : nibUI.saveToFileButton.state(),
+            "saveToClipBoard" : nibUI.saveToClipboardButton.state(),
+        })
+
+        // Saving settings to file
+        parameters.writeToFile_atomically(pathToSettingsFile, false)
+        mainFunction(context, parameters)
+    }
+}
+
+function mainFunction(context, parameters) {
+    logObj(parameters)
+    
+    var selection = context.selection
+    var document = context.document
+    
+    var originalPage = document.currentPage()
+    var tempPage = document.currentPage().copy()
+    tempPage.setName("Temp Page")
+    document.documentData().addPage(tempPage)
+    
+    // Getting rid of symbols
+    var exportedInstanceLoopDict = NSMutableDictionary.dictionary()
+    var count = 0
+    
+    var pageChildrenLoop = tempPage.children().objectEnumerator()
+    while (pageLayer = pageChildrenLoop.nextObject()) {
+        if (pageLayer.isMemberOfClass(MSSymbolInstance)) {
+            findAndDetachFromSymbol(pageLayer)
+        }
+    }
+    function findAndDetachFromSymbol(layer) {
+        if (layer.isMemberOfClass(MSSymbolInstance)) {
+            layer = layer.detachByReplacingWithGroup()
+            exportedInstanceLoopDict[layer.objectID()] = layer.children().objectEnumerator()
+            while (innerLayer = exportedInstanceLoopDict[layer.objectID()].nextObject()) {
+                findAndDetachFromSymbol(innerLayer)
+            }
+        }
+    }
+    
+    // Getting texts
+    var resultDict = NSMutableDictionary.dictionary()
+    
+    var pageLayersLoop = tempPage.layers().objectEnumerator()
+    while (pageLayer = pageLayersLoop.nextObject()) {
+        if (pageLayer.isMemberOfClass(MSArtboardGroup) || pageLayer.isMemberOfClass(MSSymbolMaster)) {
+            var artboardChildrenLoop = pageLayer.children().objectEnumerator()
+            while (artboardChildLayer = artboardChildrenLoop.nextObject()) {
+                itentifyAndAddResult(artboardChildLayer, artboardChildLayer.parentArtboard().nodeName())
+            }
+        }
+        itentifyAndAddResult(pageLayer, "No Artboard")
+    }
+    
+    // Validating and adding results
+    function itentifyAndAddResult(layer, key) {
+        if (layer.isMemberOfClass(MSTextLayer) && isValid(layer)) {
+            var preparedString = prepareString(layer.attributedString().string())
+            addResult(preparedString, key)
+        }
+        
+        function isValid(layer) {
+            var string = layer.attributedString().string()
+            if (string.length() < parameters["minLength"] || string.length() > parameters["maxLength"]) { return false } /* Settings: Length */
+            return true
+        }
+        
+        function prepareString(string) {
+            return string.stringByReplacingOccurrencesOfString_withString("\n"," · ")
+        }
+        
+        function addResult(string, key) {
+            if (resultDict.objectForKey(key)) {
+                resultDict[key].addObject(string)
+            } else {
+                resultDict[key] = NSMutableArray.array()
+                resultDict[key].addObject(string)
+            }
+        }
+    }
+    
+    document.documentData().removePage(tempPage)
+    
+    // Preparing the result string
+    var resultString = ""
+    
+    var resultKeysLoop = resultDict.allKeys().objectEnumerator()
+    while (resultKey = resultKeysLoop.nextObject()) {
+        
+        if (parameters["showBlankSpaceBetweenArtboards"]) { resultString += "\n" } /* Settings: Show Blank Space Between Artboards */
+        if (parameters["showArtboardNames"]) { resultString += "\n" + resultKey } /* Settings: Artboard Names */
+        if (parameters["divider"] != " ") { resultString += "\n" + parameters["divider"] } /* Settings: Divider */
+        
+        var stringsLoop = resultDict[resultKey].objectEnumerator()
+        while (string = stringsLoop.nextObject()) {
+            resultString += "\n" + string
+        }
+    }
+    resultString = NSString.stringWithFormat("%@",resultString)
+    resultString = resultString.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+    
+    // Final actions
+    parameters["saveToFile"] != 0 ? saveToFile(resultString) : saveToClipboard(resultString) /* Settings: Save to File or Clipboard */
+    
+    function saveToFile(string) {
+        
+        // Configuring save Panel
+        var savePanel = NSSavePanel.savePanel()
+        savePanel.setAllowedFileTypes(["txt"])
+        savePanel.setNameFieldStringValue(context.document.publisherFileName() + " Text")
+        
+        // Launching alert
+        var result = savePanel.runModal()
+        if (result == NSFileHandlingPanelOKButton) {
+            string.writeToFile_atomically_encoding_error(savePanel.URL().path(),
+                                                         true, NSUTF8StringEncoding, nil)
+        }
+    }
+    
+    function saveToClipboard(string) {
+        var pasteBoard = NSPasteboard.generalPasteboard()
+        pasteBoard.clearContents()
+        pasteBoard.setString_forType(string, NSStringPboardType)
+        document.showMessage("Your list has been copied to clipboard")
+    }
+}
+
+// Debug
+function logObj(obj) {
+    NSLog(@"%@",obj)
+}
