@@ -15,9 +15,9 @@ var onRun = function(context) {
                            "blankSpaceBetweenArtboardsButton",
                            "showArtboardNamesButton",
                            "dividerTextField",
-                                                           
-                           "saveToClipboardButton",
+                                                   
                            "saveToFileButton",
+                           "saveToClipboardButton",
                            ])
     
     // Configuring alert
@@ -31,14 +31,24 @@ var onRun = function(context) {
     alert.addButtonWithTitle("Cancel")
     alert.setAccessoryView(nibUI.view)
     
-    nibUI.attachTargetAndAction(nibUI.saveToClipboardButton, function() {
-                                nibUI.saveToFileButton.setState(0);
-                                alert.setMessageText(alertMessageTextWithoutLastWord + " Clipboard")
-                                });
+    // Radio buttons actions
     nibUI.attachTargetAndAction(nibUI.saveToFileButton, function() {
-                                nibUI.saveToClipboardButton.setState(0);
-                                alert.setMessageText(alertMessageTextWithoutLastWord + " File")
+                                selectSaveToFile()
                                 });
+    function selectSaveToFile() {
+        alert.setMessageText(alertMessageTextWithoutLastWord + " File")
+        nibUI.saveToFileButton.setState(1)
+        nibUI.saveToClipboardButton.setState(0)
+    }
+    
+    nibUI.attachTargetAndAction(nibUI.saveToClipboardButton, function() {
+        selectSaveToClipboard()
+    });
+    function selectSaveToClipboard() {
+        alert.setMessageText(alertMessageTextWithoutLastWord + " Clipboard")
+        nibUI.saveToFileButton.setState(0)
+        nibUI.saveToClipboardButton.setState(1)
+    }
     
     // Restoring last parameters
     nibUI.attachTargetAndAction(nibUI.useLastSettingsButton, function() {
@@ -51,8 +61,7 @@ var onRun = function(context) {
                                 nibUI.showArtboardNamesButton.setState( lastParameters["showArtboardNames"] )
                                 nibUI.dividerTextField.setStringValue( lastParameters["divider"] != "---" ? lastParameters["divider"] : "" )
                                 
-                                nibUI.saveToFileButton.setState( lastParameters["saveToFile"] )
-                                nibUI.saveToClipboardButton.setState( lastParameters["saveToClipBoard"] )
+                                lastParameters["saveToFile"] ? selectSaveToFile() : selectSaveToClipboard()
                                 });
     
     // Launching alert
@@ -68,7 +77,6 @@ var onRun = function(context) {
             "divider" : nibUI.dividerTextField.stringValue() != "" ? nibUI.dividerTextField.stringValue() : "---",
             
             "saveToFile" : nibUI.saveToFileButton.state(),
-            "saveToClipBoard" : nibUI.saveToClipboardButton.state(),
         })
 
         // Saving settings to file
