@@ -21,7 +21,7 @@ Export Text plugin should help you to save all text data on current page in cust
 - [ ] Filter by string contents
 - [ ] Export as JSON
 - [ ] Export as .plist
-- Advanced filter by layer name (starts/ends with and containing) *— done but removed because may confuse*
+- Advanced filter by layer name (by starts/ends with and containing) *— done but removed because may confuse*
 
 ## Feedback
 Your feedback is always appreciated. You can [Create an Issue](https://github.com/exevil/Sketch-Export-Text/issues/new) to report errors and feature requests or drop me a line directly to [m@dbv.ae](mailto:m@dbv.ae?Subject=Sketch%20Export%20Text%20Feedback)
