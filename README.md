@@ -1,5 +1,5 @@
 # Export Text Sketch Plugin
-Export Text plugin should help you to save all text data on current page in customizable format and clean up the excess.
+Export Text plugin should help you to save all text data on current page in customizable format and filter the excess.
 
 ## Setting up
 <img src="http://i.dbv.ae/iEff/Screen%20Shot%202016-11-25%20at%2019.38.08.png" height="447">
