@@ -6,11 +6,13 @@ Export Text plugin should help you to save all text data on current page in cust
 
 * **Use Last Settings** — restoring settings you used previously
 * **Text Length** — excluding layer from output if it's text length is more or less than provided values
-* **Skip Layers** — skips any layer, artboard or symbol with given name. Enter any names you wanted to skip separated by comma and space e.g. `Rectangle 1, Screen 2, Symbol 3`. *Please keep in mind that if you used nested symbol with skip-name as override for another symbol then any contents of this override (not the whole symbol) also will not be added to output*
+* **Skip Layers** — skips any layer, artboard or symbol with given name. Enter any names you wanted to skip separated by comma and space e.g. `Rectangle 1, Screen 2, Symbol 3`.¹
 * **Before Artboard Divider** — adding a divider before next artboard. Empty line by default. You can add more lines by using `⌥ + return`
 * **Show Artboard Name** — adding an artboard name before its contents
 * **After Artboard Divider** — adding a divider between artboard name and its contents. Empty line by default. You can add more lines by using `⌥ + return`
 * **Save to:** — choose how you'd like to save an output
+
+*1. Please keep in mind that if you used symbol with skip-name as override or just added it as an instance to another symbol's master then contents of this instance or override (not the whole symbol) also will not be added to output. It's really confusing so please double check your symbols data if you want to use this function.*
 
 ## Example Output
 ![](http://i.dbv.ae/iEkn/Screen%20Shot%202016-11-25%20at%2020.33.10.png)
