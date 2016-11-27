@@ -2,7 +2,7 @@
 Export Text plugin should help you to save all text data on current page in customizable format and filter the excess.
 
 ## Setting up
-<img src="http://i.dbv.ae/iEff/Screen%20Shot%202016-11-25%20at%2019.38.08.png" height="447">
+<img src="http://i.dbv.ae/iFC9/Screen%20Shot%202016-11-27%20at%2022.36.45.png" height="506">
 
 * **Use Last Settings** — restoring settings you used previously
 * **Text Length** — excluding layer from output if it's text length is more or less than provided values
