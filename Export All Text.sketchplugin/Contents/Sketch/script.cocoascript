@@ -120,7 +120,7 @@ var onRun = function(context) {
             
             "saveToFile" : nibUI.saveToFileButton.state(),
         })
-        logObj(parameters["skipLayerNames"] == 0)
+
         // Saving settings to file
         parameters.writeToFile_atomically(pathToSettingsFile, false)
         
@@ -168,6 +168,7 @@ var onRun = function(context) {
                 } else {
                     var artboardName = groupChildLayer.parentArtboard() ? groupChildLayer.parentArtboard().nodeName() : "No Artboard"
                     itentifyAndAddResult(groupChildLayer, artboardName)
+                    print(groupChildLayer + "passed")
                 }
             }
         }
@@ -206,7 +207,7 @@ var onRun = function(context) {
             if (parameters["skipLayerNames"] != 0) {
                 var skipLayerNamesLoop = parameters["skipLayerNames"].objectEnumerator()
                 while (skipLayerName = skipLayerNamesLoop.nextObject()) {
-                    if (skipLayerName == layerName) { return false }
+                    if (skipLayerName.isEqualToString(layerName)) { return false }
                 }
             }
             return true
