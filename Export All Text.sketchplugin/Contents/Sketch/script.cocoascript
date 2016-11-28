@@ -175,9 +175,8 @@ var onRun = function(context) {
         
         // Validating results and making dictionary
         function itentifyAndAddResult(layer, key) {
-            if ( !isLayerNameValid(layer.nodeName()) || !isTextValid(layer)) { return }
-            
             if (layer.isMemberOfClass(MSTextLayer)) {
+                if ( !isLayerNameValid(layer.nodeName()) || !isTextValid(layer)) { return }
                 var preparedString = prepareString(layer.attributedString().string())
                 addResult(preparedString, key)
             }
