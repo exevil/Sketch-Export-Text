@@ -19,6 +19,7 @@ Export Text plugin should help you to save all text data on current page in cust
 
 ## Upcoming Features
 - [x] Filter by layer name
+- [ ] Optionally include layer names
 - [ ] Error state if output is empty
 - [ ] Show exporting process progress
 - [ ] Filter by string contents
