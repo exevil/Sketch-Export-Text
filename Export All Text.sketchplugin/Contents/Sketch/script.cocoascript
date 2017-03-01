@@ -145,7 +145,11 @@ var onRun = function(context) {
         }
         function findAndDetachFromSymbol(layer) {
             if (layer.isMemberOfClass(MSSymbolInstance)) {
+                
+                var layerName = layer.name()
                 layer = layer.detachByReplacingWithGroup()
+                layer.name = layerName
+                
                 exportedInstanceLoopDict[layer.objectID()] = layer.children().objectEnumerator()
                 while (innerLayer = exportedInstanceLoopDict[layer.objectID()].nextObject()) {
                     findAndDetachFromSymbol(innerLayer)
@@ -159,7 +163,7 @@ var onRun = function(context) {
         iterateThroughInnerLayersAndValidate(tempPage)
         
         function iterateThroughInnerLayersAndValidate(layerGroup) {
-            if ( !isLayerNameValid(layerGroup.nodeName()) ) { return }
+            if ( !isLayerNameValid(layerGroup.name()) ) { return }
             
             var groupLayersLoop = layerGroup.layers().objectEnumerator()
             while (groupChildLayer = groupLayersLoop.nextObject()) {
@@ -168,7 +172,6 @@ var onRun = function(context) {
                 } else {
                     var artboardName = groupChildLayer.parentArtboard() ? groupChildLayer.parentArtboard().nodeName() : "No Artboard"
                     itentifyAndAddResult(groupChildLayer, artboardName)
-                    print(groupChildLayer + "passed")
                 }
             }
         }
@@ -176,7 +179,7 @@ var onRun = function(context) {
         // Validating results and making dictionary
         function itentifyAndAddResult(layer, key) {
             if (layer.isMemberOfClass(MSTextLayer)) {
-                if ( !isLayerNameValid(layer.nodeName()) || !isTextValid(layer)) { return }
+                if ( !isLayerNameValid(layer.name()) || !isTextValid(layer)) { return }
                 var preparedString = prepareString(layer.attributedString().string())
                 addResult(preparedString, key)
             }
@@ -257,9 +260,4 @@ var onRun = function(context) {
             document.showMessage("Your list has been copied to clipboard")
         }
     }
-}
-
-// Debug
-function logObj(obj) {
-    NSLog(@"%@",obj)
 }
