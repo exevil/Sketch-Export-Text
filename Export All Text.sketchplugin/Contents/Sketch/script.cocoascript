@@ -143,16 +143,20 @@ var onRun = function(context) {
         while (pageLayer = pageChildrenLoop.nextObject()) {
             findAndDetachFromSymbol(pageLayer)
         }
+        
         function findAndDetachFromSymbol(layer) {
             if (layer.isMemberOfClass(MSSymbolInstance)) {
                 
-                var layerName = layer.name()
+                var layerName = layer.nodeName()
                 layer = layer.detachByReplacingWithGroup()
-                layer.name = layerName
                 
-                exportedInstanceLoopDict[layer.objectID()] = layer.children().objectEnumerator()
-                while (innerLayer = exportedInstanceLoopDict[layer.objectID()].nextObject()) {
-                    findAndDetachFromSymbol(innerLayer)
+                if (layer) {
+                    if (layer.nodeName()) { layer.nodeName = layerName }
+                    
+                    exportedInstanceLoopDict[layer.objectID()] = layer.children().objectEnumerator()
+                    while (innerLayer = exportedInstanceLoopDict[layer.objectID()].nextObject()) {
+                        findAndDetachFromSymbol(innerLayer)
+                    }
                 }
             }
         }
@@ -179,7 +183,7 @@ var onRun = function(context) {
         // Validating results and making dictionary
         function itentifyAndAddResult(layer, key) {
             if (layer.isMemberOfClass(MSTextLayer)) {
-                if ( !isLayerNameValid(layer.name()) || !isTextValid(layer)) { return }
+                if ( !isLayerNameValid(layer.nodeName()) || !isTextValid(layer)) { return }
                 var preparedString = prepareString(layer.attributedString().string())
                 addResult(preparedString, key)
             }
