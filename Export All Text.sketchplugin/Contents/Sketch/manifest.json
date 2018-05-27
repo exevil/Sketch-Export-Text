@@ -15,7 +15,7 @@
       "com.bohemiancoding.sketch.runscriptidentifier"
     ],
     "title" : "Export text from Page...",
-      "isRoot" : true,
+      "isRoot" : true
   },
   "identifier" : "com.example.sketch.f16cc26a-dbde-49e7-8abd-4d81585247df",
   "version" : "1.0",
