@@ -73,7 +73,8 @@ var onRun = function(context) {
                                 });
     function selectUseBeforeArtboardDivider(inputBool) {
         nibUI.beforeArtboardDividerButton.state = inputBool
-        nibUI.beforeArtboardDividerTextField.hidden = inputBool != 0 ? 0 : 1
+        nibUI.beforeArtboardDividerButton.title = inputBool ? "" : "No Divider"
+        nibUI.beforeArtboardDividerTextField.hidden = !inputBool
     }
     
     nibUI.attachTargetAndAction(nibUI.afterArtboardDividerButton, function() {
@@ -81,7 +82,8 @@ var onRun = function(context) {
                                 });
     function selectUseAfterArtboardDivider(inputBool) {
         nibUI.afterArtboardDividerButton.state = inputBool
-        nibUI.afterArtboardDividerTextField.hidden = inputBool != 0 ? 0 : 1
+        nibUI.afterArtboardDividerButton.title = inputBool ? "" : "No Divider"
+        nibUI.afterArtboardDividerTextField.hidden = !inputBool
     }
     
     // Radio buttons actions
@@ -148,7 +150,7 @@ var onRun = function(context) {
             if (layer.isMemberOfClass(MSSymbolInstance)) {
                 
                 var layerName = layer.nodeName()
-                layer = layer.detachByReplacingWithGroup()
+                layer = layer.detachStylesAndReplaceWithGroupRecursively(false)
                 
                 if (layer) {
                     if (layer.nodeName()) { layer.nodeName = layerName }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>afterArtboardDivider</key>
+	<string></string>
+	<key>afterArtboardDividerIsEnabled</key>
+	<real>0.0</real>
+	<key>beforeArtboardDivider</key>
+	<string></string>
+	<key>beforeArtboardDividerIsEnabled</key>
+	<real>0.0</real>
+	<key>maxLength</key>
+	<real>9007199254740991</real>
+	<key>minLength</key>
+	<real>0.0</real>
+	<key>saveToFile</key>
+	<real>1</real>
+	<key>showArtboardNames</key>
+	<real>0.0</real>
+	<key>skipLayerNames</key>
+	<real>0.0</real>
+</dict>
+</plist>

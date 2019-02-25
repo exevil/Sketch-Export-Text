@@ -18,7 +18,7 @@
       "isRoot" : true
   },
   "identifier" : "com.example.sketch.f16cc26a-dbde-49e7-8abd-4d81585247df",
-  "version" : "1.0",
+  "version" : "1.1",
   "description" : "Exports all text from current page",
   "authorEmail" : "m@dbv.ae",
   "name" : "Export All Text"
